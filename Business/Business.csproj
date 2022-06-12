@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="Ninject" Version="3.3.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <ProjectReference Include="..\Entities\Entities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ValidationRules\FluentValidation\CategoryValidator\" />
+    <Folder Include="ValidationRules\FluentValidation\CompanyWealthValidator\" />
+    <Folder Include="ValidationRules\FluentValidation\FavoriteValidator\" />
+    <Folder Include="ValidationRules\FluentValidation\FortuneValidator\" />
+    <Folder Include="ValidationRules\FluentValidation\PersonalWealthValidator\" />
+    <Folder Include="ValidationRules\FluentValidation\ProductValidator\" />
+  </ItemGroup>
+
+</Project>
