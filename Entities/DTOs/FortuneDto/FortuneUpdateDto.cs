@@ -6,6 +6,5 @@ namespace Entities.DTOs.FortuneDto
     {
         public int Id { get; set; }
         public int FortuneId { get; set; }
-        public DateTime UpdateDate { get; set; }
     }
 }

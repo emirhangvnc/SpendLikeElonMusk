@@ -9,7 +9,6 @@ namespace Business.AutoMapper.Profiles
         public CompanyWealthProfile()
         {
             CreateMap<CompanyWealthAddDto, CompanyWealth>().ReverseMap();
-            CreateMap<CompanyWealthDeleteDto, CompanyWealth>().ReverseMap();
             CreateMap<CompanyWealthUpdateDto, CompanyWealth>().ReverseMap();
         }
     }

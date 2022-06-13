@@ -9,7 +9,6 @@ namespace Business.AutoMapper.Profiles
         public FavoriteProfile()
         {
             CreateMap<FavoriteAddDto, Favorite>().ReverseMap();
-            CreateMap<FavoriteDeleteDto, Favorite>().ReverseMap();
             CreateMap<FavoriteUpdateDto, Favorite>().ReverseMap();
         }
     }

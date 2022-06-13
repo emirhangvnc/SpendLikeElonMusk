@@ -9,7 +9,6 @@ namespace Business.AutoMapper.Profiles
         public FortuneProfile()
         {
             CreateMap<FortuneAddDto, Fortune>().ReverseMap();
-            CreateMap<FortuneDeleteDto, Fortune>().ReverseMap();
             CreateMap<FortuneUpdateDto, Fortune>().ReverseMap();
         }
     }

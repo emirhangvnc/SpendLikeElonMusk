@@ -17,13 +17,4 @@
     <ProjectReference Include="..\Entities\Entities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ValidationRules\FluentValidation\CategoryValidator\" />
-    <Folder Include="ValidationRules\FluentValidation\CompanyWealthValidator\" />
-    <Folder Include="ValidationRules\FluentValidation\FavoriteValidator\" />
-    <Folder Include="ValidationRules\FluentValidation\FortuneValidator\" />
-    <Folder Include="ValidationRules\FluentValidation\PersonalWealthValidator\" />
-    <Folder Include="ValidationRules\FluentValidation\ProductValidator\" />
-  </ItemGroup>
-
 </Project>

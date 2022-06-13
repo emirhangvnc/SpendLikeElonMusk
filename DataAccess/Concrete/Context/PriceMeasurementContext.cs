@@ -1,7 +1,5 @@
 ﻿using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
-using DataAccess.Concrete.EntityFramework;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DataAccess.Concrete.Context
 {
@@ -17,6 +15,5 @@ namespace DataAccess.Concrete.Context
         public DbSet<Fortune> fortunes { get; set; }
         public DbSet<PersonalWealth> personalWealths { get; set; }
         public DbSet<Product> Products { get; set; }
-
     }
 }

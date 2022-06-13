@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Business.Abstract;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Business.Abstract;
 using Core.Utilities.Results;
 using Entities.DTOs.FortuneDto;
 using Entities.Concrete;
 using DataAccess.Abstract;
 using AutoMapper;
+using Core.Aspects.Ninject.Validation;
+using Business.ValidationRules.FluentValidation.FortuneValidator;
+using Core.Aspects.Ninject.Caching;
+using Business.Constants;
 
 namespace Business.Concrete
 {
@@ -21,29 +20,50 @@ namespace Business.Concrete
             _fortuneDal = fortuneDal;
             _mapper = mapper;
         }
+
+        [ValidationAspect(typeof(FortuneAddDtoValidator))]
+        [CacheRemoveAspect("IFortuneService.Get")]
         public IResult Add(FortuneAddDto fortuneAddDto)
         {
-            throw new NotImplementedException();
+            var fortune = _mapper.Map<Fortune>(fortuneAddDto);
+            fortune.UpdateDate = DateTime.Now;
+            _fortuneDal.Add(fortune);
+            return new SuccessResult(Messages.FortuneAdded);
         }
 
+        [ValidationAspect(typeof(FortuneDeleteDtoValidator))]
+        [CacheRemoveAspect("IFortuneService.Get")]
         public IResult Delete(FortuneDeleteDto fortuneDeleteDto)
         {
-            throw new NotImplementedException();
+            var result = _fortuneDal.Get(f => f.Id == fortuneDeleteDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.FortuneNotFound);
+            _fortuneDal.Delete(result);
+            return new SuccessResult(Messages.FortuneDeleted);
         }
 
-        public IDataResult<List<Fortune>> GetALl()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDataResult<Fortune> GetByFortuneId()
-        {
-            throw new NotImplementedException();
-        }
-
+        [ValidationAspect(typeof(FortuneUpdateDtoValidator))]
+        [CacheRemoveAspect("IFortuneService.Get")]
         public IResult Update(FortuneUpdateDto fortuneUpdateDto)
         {
-            throw new NotImplementedException();
+            var result = _fortuneDal.GetAll().SingleOrDefault(c => c.Id == fortuneUpdateDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.FortuneNotFound);
+            var fortune = _mapper.Map(fortuneUpdateDto, result);
+            _fortuneDal.Update(fortune);
+            return new SuccessResult(Messages.FortuneUpdated);
+        }
+
+        [CacheAspect]
+        public IDataResult<List<Fortune>> GetALl()
+        {
+            return new SuccessDataResult<List<Fortune>>(_fortuneDal.GetAll(), Messages.FortuneListed);
+        }
+
+        [CacheAspect]
+        public IDataResult<Fortune> GetByFortuneId(int fortuneId)
+        {
+            return new SuccessDataResult<Fortune>(_fortuneDal.Get(f => f.Id == fortuneId));
         }
     }
 }

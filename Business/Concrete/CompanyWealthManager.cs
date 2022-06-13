@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Business.Abstract;
-using System.Threading.Tasks;
+﻿using Business.Abstract;
 using Core.Utilities.Results;
 using Entities.DTOs.CompanyWealthDto;
 using Entities.Concrete;
 using DataAccess.Abstract;
 using AutoMapper;
+using Core.Aspects.Ninject.Caching;
+using Core.Aspects.Ninject.Validation;
+using Business.ValidationRules.FluentValidation.CompanyWealthValidator;
+using Business.Constants;
 
 namespace Business.Concrete
 {
@@ -21,29 +20,49 @@ namespace Business.Concrete
             _companyWealthDal = companyWealthDal;
             _mapper = mapper;
         }
+
+        [ValidationAspect(typeof(CompanyWealthAddDtoValidator))]
+        [CacheRemoveAspect("ICompanyWealthService.Get")]
         public IResult Add(CompanyWealthAddDto companyWealthAddDto)
         {
-            throw new NotImplementedException();
+            var companyWealth = _mapper.Map<CompanyWealth>(companyWealthAddDto);
+            _companyWealthDal.Add(companyWealth);
+            return new SuccessResult(Messages.CompanyWealthAdded);
         }
 
+        [ValidationAspect(typeof(CompanyWealthDeleteDtoValidator))]
+        [CacheRemoveAspect("ICompanyWealthService.Get")]
         public IResult Delete(CompanyWealthDeleteDto companyWealthDeleteDto)
         {
-            throw new NotImplementedException();
+            var result = _companyWealthDal.Get(c => c.Id == companyWealthDeleteDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.CompanyWealthNotFound);
+            _companyWealthDal.Delete(result);
+            return new SuccessResult(Messages.CompanyWealthDeleted);
         }
 
-        public IDataResult<List<CompanyWealth>> GetALl()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDataResult<CompanyWealth> GetByCompanyWealthId()
-        {
-            throw new NotImplementedException();
-        }
-
+        [ValidationAspect(typeof(CompanyWealthUpdateDtoValidator))]
+        [CacheRemoveAspect("ICompanyWealthService.Get")]
         public IResult Update(CompanyWealthUpdateDto companyWealthUpdateDto)
         {
-            throw new NotImplementedException();
+            var result = _companyWealthDal.Get(c => c.Id == companyWealthUpdateDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.CompanyWealthNotFound);
+            var companyWealth = _mapper.Map(companyWealthUpdateDto, result);
+            _companyWealthDal.Update(companyWealth);
+            return new SuccessResult(Messages.CompanyWealthUpdated);
+        }
+
+        [CacheAspect]
+        public IDataResult<List<CompanyWealth>> GetALl()
+        {
+            return new SuccessDataResult<List<CompanyWealth>>(_companyWealthDal.GetAll(),Messages.CompanyWealthListed);
+        }
+
+        [CacheAspect]
+        public IDataResult<CompanyWealth> GetByCompanyWealthId(int companyWealthId)
+        {
+            return new SuccessDataResult<CompanyWealth>(_companyWealthDal.Get(c=>c.Id==companyWealthId));
         }
     }
 }

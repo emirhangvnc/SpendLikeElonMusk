@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Business.Abstract;
-using System.Threading.Tasks;
+﻿using Business.Abstract;
 using Core.Utilities.Results;
-using Entities.DTOs.PersonalWeathDto;
+using Entities.DTOs.PersonalWealthDto;
 using Entities.Concrete;
 using DataAccess.Abstract;
 using AutoMapper;
+using Core.Aspects.Ninject.Validation;
+using Business.ValidationRules.FluentValidation.PersonalWealthValidator;
+using Core.Aspects.Ninject.Caching;
+using Business.Constants;
 
 namespace Business.Concrete
 {
@@ -21,29 +20,50 @@ namespace Business.Concrete
             _personalWealthDal = personalWealthDal;
             _mapper = mapper;
         }
-        public IResult Add(PersonalWeathAddDto personalWeathAddDto)
+
+        [ValidationAspect(typeof(PersonalWealthAddDtoValidator))]
+        [CacheRemoveAspect("IPersonalWealthService.Get")]
+        public IResult Add(PersonalWealthAddDto personalWealthAddDto)
         {
-            throw new NotImplementedException();
+            var personal = _mapper.Map<PersonalWealth>(personalWealthAddDto);
+            _personalWealthDal.Add(personal);
+            return new SuccessResult(Messages.PersonalWealthAdded);
         }
 
-        public IResult Delete(PersonalWeathDeleteDto personalWeathDeleteDto)
+        [ValidationAspect(typeof(PersonalWealthDeleteDtoValidator))]
+        [CacheRemoveAspect("IPersonalWealthService.Get")]
+        public IResult Delete(PersonalWealthDeleteDto personalWeathDeleteDto)
         {
-            throw new NotImplementedException();
+            var result = _personalWealthDal.GetAll().SingleOrDefault(f => f.Id == personalWeathDeleteDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.PersonalWealthNotFound);
+            _personalWealthDal.Delete(result);
+            return new SuccessResult(Messages.PersonalWealthDeleted);
         }
 
-        public IDataResult<List<Favorite>> GetAll()
+        [ValidationAspect(typeof(PersonalWealthUpdateDtoValidator))]
+        [CacheRemoveAspect("IPersonalWealthService.Get")]
+        public IResult Update(PersonalWealthUpdateDto personalWeathUpdateDto)
         {
-            throw new NotImplementedException();
+            var result = _personalWealthDal.GetAll().SingleOrDefault(p => p.Id == personalWeathUpdateDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.PersonalWealthUpdated);
+
+            var personal = _mapper.Map(personalWeathUpdateDto, result);
+            _personalWealthDal.Update(personal);
+            return new SuccessResult(Messages.PersonalWealthUpdated);
         }
 
-        public IDataResult<Favorite> GetByPersonalWeathId()
+        [CacheAspect]
+        public IDataResult<List<PersonalWealth>> GetAll()
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<List<PersonalWealth>>(_personalWealthDal.GetAll(),Messages.PersonalWealthListed);
         }
 
-        public IResult Update(PersonalWeathUpdateDto personalWeathUpdateDto)
+        [CacheAspect]
+        public IDataResult<PersonalWealth> GetByPersonalWealthId(int personalWealth)
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<PersonalWealth>(_personalWealthDal.Get(p => p.Id == personalWealth));
         }
     }
 }

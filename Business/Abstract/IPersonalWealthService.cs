@@ -1,16 +1,16 @@
 ﻿using Core.Utilities.Results;
 using Entities.Concrete;
-using Entities.DTOs.PersonalWeathDto;
+using Entities.DTOs.PersonalWealthDto;
 
 namespace Business.Abstract
 {
     public interface IPersonalWealthService
     {
         IDataResult<List<PersonalWealth>> GetAll();
-        IDataResult<PersonalWealth> GetByPersonalWeathId();
+        IDataResult<PersonalWealth> GetByPersonalWealthId(int personalWealth);
 
-        IResult Add(PersonalWeathAddDto personalWeathAddDto);
-        IResult Delete(PersonalWeathDeleteDto personalWeathDeleteDto);
-        IResult Update(PersonalWeathUpdateDto PpersonalWeathUpdateDto);
+        IResult Add(PersonalWealthAddDto personalWealthAddDto);
+        IResult Delete(PersonalWealthDeleteDto personalWealthDeleteDto);
+        IResult Update(PersonalWealthUpdateDto PpersonalWealthUpdateDto);
     }
 }

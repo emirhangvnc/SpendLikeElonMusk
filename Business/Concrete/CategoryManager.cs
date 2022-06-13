@@ -2,13 +2,12 @@
 using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.DTOs.CategoryDto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataAccess.Abstract;
 using AutoMapper;
+using Business.Constants;
+using Core.Aspects.Ninject.Validation;
+using Business.ValidationRules.FluentValidation.CategoryValidator;
+using Core.Aspects.Ninject.Caching;
 
 namespace Business.Concrete
 {
@@ -21,29 +20,52 @@ namespace Business.Concrete
             _categoryDal = categoryDal;
             _mapper = mapper;
         }
+
+        [ValidationAspect(typeof(CategoryAddDtoValidator))]
+        [CacheRemoveAspect("ICategoryService.Get")]
         public IResult Add(CategoryAddDto categoryAddDto)
         {
-            throw new NotImplementedException();
+            var result = _categoryDal.GetAll().SingleOrDefault(c => c.CategoryName == categoryAddDto.CategoryName);
+            if (result != null)
+                return new ErrorResult("Bu İsimde Kategori Zaten Mevcut");
+            var category = _mapper.Map<Category>(categoryAddDto);
+            _categoryDal.Add(category);
+            return new SuccessResult(Messages.CategoryAdded);
         }
 
+        [ValidationAspect(typeof(CategoryDeleteDtoValidator))]
+        [CacheRemoveAspect("ICategoryService.Get")]
         public IResult Delete(CategoryDeleteDto categoryDeleteDto)
         {
-            throw new NotImplementedException();
+            var result = _categoryDal.GetAll().SingleOrDefault(c => c.CategoryId == categoryDeleteDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.CategoryNotFound);
+            _categoryDal.Delete(result);
+            return new SuccessResult(Messages.CategoryDeleted);
         }
 
-        public IDataResult<List<Category>> GetALl()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDataResult<Category> GetByCategoryId()
-        {
-            throw new NotImplementedException();
-        }
-
+        [ValidationAspect(typeof(CategoryUpdateDtoValidator))]
+        [CacheRemoveAspect("ICategoryService.Get")]
         public IResult Update(CategoryUpdateDto categoryUpdateDto)
         {
-            throw new NotImplementedException();
+            var result = _categoryDal.GetAll().SingleOrDefault(c => c.CategoryId == categoryUpdateDto.Id);
+            if (result == null)
+                return new ErrorResult(Messages.CategoryNotFound);
+            var category = _mapper.Map(categoryUpdateDto, result);
+            _categoryDal.Update(category);
+            return new SuccessResult(Messages.CategoryUpdated);
+        }
+
+        [CacheAspect]
+        public IDataResult<List<Category>> GetALl()
+        {
+            return new SuccessDataResult<List<Category>>(_categoryDal.GetAll(), Messages.CategoryListed);
+        }
+
+        [CacheAspect]
+        public IDataResult<Category> GetByCategoryId(int categoryId)
+        {
+            return new SuccessDataResult<Category>(_categoryDal.Get(b => b.CategoryId == categoryId));
         }
     }
 }

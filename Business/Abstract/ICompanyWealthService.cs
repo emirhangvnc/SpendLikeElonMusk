@@ -7,7 +7,7 @@ namespace Business.Abstract
     public interface ICompanyWealthService
     {
         IDataResult<List<CompanyWealth>> GetALl();
-        IDataResult<CompanyWealth> GetByCompanyWealthId();
+        IDataResult<CompanyWealth> GetByCompanyWealthId(int companyWealthId);
 
         IResult Add(CompanyWealthAddDto companyWealthAddDto);
         IResult Delete(CompanyWealthDeleteDto companyWealthDeleteDto);

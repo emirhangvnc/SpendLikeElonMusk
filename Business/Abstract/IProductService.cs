@@ -7,7 +7,7 @@ namespace Business.Abstract
     public interface IProductService
     {
         IDataResult<List<Product>> GetALl();
-        IDataResult<Product> GetByProductId();
+        IDataResult<Product> GetByProductId(int productId);
 
         IResult Add(ProductAddDto productAddDto);
         IResult Delete(ProductDeleteDto productDeleteDto);

@@ -7,7 +7,7 @@ namespace Business.Abstract
     public interface IFavoriteService
     {
         IDataResult<List<Favorite>> GetALl();
-        IDataResult<Favorite> GetByFavoriteId();
+        IDataResult<Favorite> GetByFavoriteId(int favoriteId);
 
         IResult Add(FavoriteAddDto favoriteAddDto);
         IResult Delete(FavoriteDeleteDto favoriteDeleteDto);
