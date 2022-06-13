@@ -8,6 +8,8 @@ using Core.Aspects.Ninject.Caching;
 using Core.Aspects.Ninject.Validation;
 using Business.ValidationRules.FluentValidation.CompanyWealthValidator;
 using Business.Constants;
+using Microsoft.AspNetCore.Http;
+using Core.Utilities.Helpers.FileHelper;
 
 namespace Business.Concrete
 {
@@ -23,9 +25,10 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(CompanyWealthAddDtoValidator))]
         [CacheRemoveAspect("ICompanyWealthService.Get")]
-        public IResult Add(CompanyWealthAddDto companyWealthAddDto)
+        public IResult Add(IFormFile file, CompanyWealthAddDto companyWealthAddDto)
         {
             var companyWealth = _mapper.Map<CompanyWealth>(companyWealthAddDto);
+            companyWealth.CompanyImage = FileHelper.Add(file);
             _companyWealthDal.Add(companyWealth);
             return new SuccessResult(Messages.CompanyWealthAdded);
         }
@@ -37,24 +40,30 @@ namespace Business.Concrete
             var result = _companyWealthDal.Get(c => c.Id == companyWealthDeleteDto.Id);
             if (result == null)
                 return new ErrorResult(Messages.CompanyWealthNotFound);
+            string path = GetByCompanyWealthId(result.Id).Data.CompanyImage;
+            FileHelper.Delete(path);
             _companyWealthDal.Delete(result);
             return new SuccessResult(Messages.CompanyWealthDeleted);
         }
 
         [ValidationAspect(typeof(CompanyWealthUpdateDtoValidator))]
         [CacheRemoveAspect("ICompanyWealthService.Get")]
-        public IResult Update(CompanyWealthUpdateDto companyWealthUpdateDto)
+        public IResult Update(IFormFile file, CompanyWealthUpdateDto companyWealthUpdateDto)
         {
             var result = _companyWealthDal.Get(c => c.Id == companyWealthUpdateDto.Id);
             if (result == null)
                 return new ErrorResult(Messages.CompanyWealthNotFound);
+
             var companyWealth = _mapper.Map(companyWealthUpdateDto, result);
+            var oldImage = GetByCompanyWealthId(companyWealth.Id).Data;
+            companyWealth.CompanyImage = FileHelper.Update(file, oldImage.CompanyImage);
+
             _companyWealthDal.Update(companyWealth);
             return new SuccessResult(Messages.CompanyWealthUpdated);
         }
 
         [CacheAspect]
-        public IDataResult<List<CompanyWealth>> GetALl()
+        public IDataResult<List<CompanyWealth>> GetAll()
         {
             return new SuccessDataResult<List<CompanyWealth>>(_companyWealthDal.GetAll(),Messages.CompanyWealthListed);
         }

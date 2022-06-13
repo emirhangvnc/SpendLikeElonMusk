@@ -6,7 +6,7 @@ namespace Business.Abstract
 {
     public interface ICategoryService
     {
-        IDataResult<List<Category>> GetALl();
+        IDataResult<List<Category>> GetAll();
         IDataResult<Category> GetByCategoryId(int categoryId);
 
         IResult Add(CategoryAddDto categoryAddDto);

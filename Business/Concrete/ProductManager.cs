@@ -8,6 +8,8 @@ using Core.Aspects.Ninject.Caching;
 using Core.Aspects.Ninject.Validation;
 using Business.ValidationRules.FluentValidation.ProductValidator;
 using Business.Constants;
+using Microsoft.AspNetCore.Http;
+using Core.Utilities.Helpers.FileHelper;
 
 namespace Business.Concrete
 {
@@ -23,9 +25,10 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(ProductAddDtoValidator))]
         [CacheRemoveAspect("IProductService.Get")]
-        public IResult Add(ProductAddDto productAddDto)
+        public IResult Add(IFormFile file, ProductAddDto productAddDto)
         {
             var product = _mapper.Map<Product>(productAddDto);
+            product.ImagePath = FileHelper.Add(file);
             _productDal.Add(product);
             return new SuccessResult(Messages.ProductAdded);
         }
@@ -37,25 +40,30 @@ namespace Business.Concrete
             var result = _productDal.GetAll().SingleOrDefault(c => c.ProductId == productDeleteDto.ProductId);
             if (result == null)
                 return new ErrorResult(Messages.ProductNotFound);
+            string path = GetByProductId(result.ProductId).Data.ImagePath;
+            FileHelper.Delete(path);
             _productDal.Delete(result);
             return new SuccessResult(Messages.ProductDeleted);
         }
 
         [ValidationAspect(typeof(ProductUpdateDtoValidator))]
         [CacheRemoveAspect("IProductService.Get")]
-        public IResult Update(ProductUpdateDto productUpdateDto)
+        public IResult Update(IFormFile file, ProductUpdateDto productUpdateDto)
         {
             var result = _productDal.GetAll().SingleOrDefault(c => c.ProductId == productUpdateDto.ProductId);
             if (result == null)
                 return new ErrorResult(Messages.ProductNotFound);
 
             var product = _mapper.Map(productUpdateDto, result);
+            var oldImage = GetByProductId(product.ProductId).Data;
+            product.ImagePath = FileHelper.Update(file, oldImage.ImagePath);
+
             _productDal.Update(product);
             return new SuccessResult(Messages.ProductUpdated);
         }
 
         [CacheAspect]
-        public IDataResult<List<Product>> GetALl()
+        public IDataResult<List<Product>> GetAll()
         {
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductListed);
         }

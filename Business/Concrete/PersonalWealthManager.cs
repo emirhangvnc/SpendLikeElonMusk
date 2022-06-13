@@ -8,6 +8,8 @@ using Core.Aspects.Ninject.Validation;
 using Business.ValidationRules.FluentValidation.PersonalWealthValidator;
 using Core.Aspects.Ninject.Caching;
 using Business.Constants;
+using Core.Utilities.Helpers.FileHelper;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.Concrete
 {
@@ -23,9 +25,10 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(PersonalWealthAddDtoValidator))]
         [CacheRemoveAspect("IPersonalWealthService.Get")]
-        public IResult Add(PersonalWealthAddDto personalWealthAddDto)
+        public IResult Add(IFormFile file, PersonalWealthAddDto personalWealthAddDto)
         {
             var personal = _mapper.Map<PersonalWealth>(personalWealthAddDto);
+            personal.Image = FileHelper.Add(file);
             _personalWealthDal.Add(personal);
             return new SuccessResult(Messages.PersonalWealthAdded);
         }
@@ -37,19 +40,24 @@ namespace Business.Concrete
             var result = _personalWealthDal.GetAll().SingleOrDefault(f => f.Id == personalWeathDeleteDto.Id);
             if (result == null)
                 return new ErrorResult(Messages.PersonalWealthNotFound);
+            string path = GetByPersonalWealthId(result.Id).Data.Image;
+            FileHelper.Delete(path);
             _personalWealthDal.Delete(result);
             return new SuccessResult(Messages.PersonalWealthDeleted);
         }
 
         [ValidationAspect(typeof(PersonalWealthUpdateDtoValidator))]
         [CacheRemoveAspect("IPersonalWealthService.Get")]
-        public IResult Update(PersonalWealthUpdateDto personalWeathUpdateDto)
+        public IResult Update(IFormFile file, PersonalWealthUpdateDto personalWeathUpdateDto)
         {
             var result = _personalWealthDal.GetAll().SingleOrDefault(p => p.Id == personalWeathUpdateDto.Id);
             if (result == null)
                 return new ErrorResult(Messages.PersonalWealthUpdated);
 
             var personal = _mapper.Map(personalWeathUpdateDto, result);
+            var oldImage = GetByPersonalWealthId(personal.Id).Data;
+
+            personal.Image = FileHelper.Update(file, oldImage.Image);
             _personalWealthDal.Update(personal);
             return new SuccessResult(Messages.PersonalWealthUpdated);
         }
@@ -61,9 +69,9 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public IDataResult<PersonalWealth> GetByPersonalWealthId(int personalWealth)
+        public IDataResult<PersonalWealth> GetByPersonalWealthId(int personalWealthId)
         {
-            return new SuccessDataResult<PersonalWealth>(_personalWealthDal.Get(p => p.Id == personalWealth));
+            return new SuccessDataResult<PersonalWealth>(_personalWealthDal.Get(p => p.Id == personalWealthId));
         }
     }
 }

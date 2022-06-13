@@ -6,7 +6,7 @@ namespace Business.Abstract
 {
     public interface IFavoriteService
     {
-        IDataResult<List<Favorite>> GetALl();
+        IDataResult<List<Favorite>> GetAll();
         IDataResult<Favorite> GetByFavoriteId(int favoriteId);
 
         IResult Add(FavoriteAddDto favoriteAddDto);

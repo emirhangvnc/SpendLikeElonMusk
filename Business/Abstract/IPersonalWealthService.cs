@@ -1,6 +1,7 @@
 ﻿using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.DTOs.PersonalWealthDto;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.Abstract
 {
@@ -9,8 +10,8 @@ namespace Business.Abstract
         IDataResult<List<PersonalWealth>> GetAll();
         IDataResult<PersonalWealth> GetByPersonalWealthId(int personalWealth);
 
-        IResult Add(PersonalWealthAddDto personalWealthAddDto);
+        IResult Add(IFormFile file, PersonalWealthAddDto personalWealthAddDto);
         IResult Delete(PersonalWealthDeleteDto personalWealthDeleteDto);
-        IResult Update(PersonalWealthUpdateDto PpersonalWealthUpdateDto);
+        IResult Update(IFormFile file, PersonalWealthUpdateDto PpersonalWealthUpdateDto);
     }
 }

@@ -54,7 +54,7 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public IDataResult<List<Favorite>> GetALl()
+        public IDataResult<List<Favorite>> GetAll()
         {
             return new SuccessDataResult<List<Favorite>>(_favoriteDal.GetAll(), Messages.FavoriteListed);
         }
@@ -64,6 +64,5 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<Favorite>(_favoriteDal.Get(f => f.FavoriteId == favoriteId));
         }
-
     }
 }

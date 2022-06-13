@@ -6,7 +6,7 @@ namespace Business.Abstract
 {
     public interface IFortuneService
     {
-        IDataResult<List<Fortune>> GetALl();
+        IDataResult<List<Fortune>> GetAll();
         IDataResult<Fortune> GetByFortuneId(int fortuneId);
 
         IResult Add(FortuneAddDto fortuneAddDto);

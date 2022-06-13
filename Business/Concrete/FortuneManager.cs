@@ -55,7 +55,7 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public IDataResult<List<Fortune>> GetALl()
+        public IDataResult<List<Fortune>> GetAll()
         {
             return new SuccessDataResult<List<Fortune>>(_fortuneDal.GetAll(), Messages.FortuneListed);
         }

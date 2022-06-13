@@ -57,7 +57,7 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public IDataResult<List<Category>> GetALl()
+        public IDataResult<List<Category>> GetAll()
         {
             return new SuccessDataResult<List<Category>>(_categoryDal.GetAll(), Messages.CategoryListed);
         }
