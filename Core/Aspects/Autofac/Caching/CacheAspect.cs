@@ -5,7 +5,7 @@ using Core.Utilities.IoC;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
-namespace Core.Aspects.Ninject.Caching
+namespace Core.Aspects.Autofac.Caching
 {
     public class CacheAspect : MethodInterception
     {

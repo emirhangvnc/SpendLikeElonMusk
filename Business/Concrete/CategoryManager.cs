@@ -5,9 +5,9 @@ using Entities.DTOs.CategoryDto;
 using DataAccess.Abstract;
 using AutoMapper;
 using Business.Constants;
-using Core.Aspects.Ninject.Validation;
+using Core.Aspects.Autofac.Validation;
 using Business.ValidationRules.FluentValidation.CategoryValidator;
-using Core.Aspects.Ninject.Caching;
+using Core.Aspects.Autofac.Caching;
 
 namespace Business.Concrete
 {

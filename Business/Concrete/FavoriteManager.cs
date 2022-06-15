@@ -4,9 +4,9 @@ using Entities.DTOs.FavoriteDto;
 using Entities.Concrete;
 using DataAccess.Abstract;
 using AutoMapper;
-using Core.Aspects.Ninject.Validation;
+using Core.Aspects.Autofac.Validation;
 using Business.ValidationRules.FluentValidation.FavoriteValidator;
-using Core.Aspects.Ninject.Caching;
+using Core.Aspects.Autofac.Caching;
 using Business.Constants;
 
 namespace Business.Concrete
